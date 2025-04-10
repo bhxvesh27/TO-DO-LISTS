@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro To-Do Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --panel: #1a1a1a;
+      --accent: #00f7ff;
+      --text: #fff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    #theme-toggle {
+  font-size: 1.2rem;
+  padding: 0.6rem 1rem;
+  border-radius: 50%;
+  background: none;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+#theme-toggle:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+    body.light {
+      background-color: #f4f4f4;
+      color: #121212;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: var(--panel);
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    body.light .sidebar {
+      background-color: #e0e0e0;
+    }
+
+    .sidebar h2 {
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .sidebar a {
+      color: #ccc;
+      text-decoration: none;
+      margin: 0.5rem 0;
+    }
+
+    body.light .sidebar a {
+      color: #333;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar h1 {
+      color: var(--accent);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0 1rem;
+    }
+
+    #task-input {
+      flex: 1;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      background: #222;
+      color: var(--text);
+    }
+
+    body.light #task-input {
+      background: #fff;
+      color: #000;
+    }
+
+    #add-btn {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #000; /* Always black for visibility */
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+::placeholder {
+  color: #aaa; /* light gray for dark mode */
+}
+
+body.light ::placeholder {
+  color: #555; /* darker gray for light mode */
+}
+
+
+body.light #add-btn {
+  color: #ffffff; /* ✅ Force black in light mode for visibility */
+}
+
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .task-item {
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    body.light .task-item {
+      background: #fff;
+      color: #000;
+    }
+
+    .task-item.done span {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .task-actions button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1.25rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  padding: 0.5rem;
+  transition: 0.2s ease;
+}
+.task-actions button:hover {
+  transform: scale(1.2);
+}
+
+
+.stats {
+  position: fixed;
+  bottom: 0;
+  left: 250px;
+  right: 0;
+  height: 60px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--panel);
+  color: var(--text);
+  border-top: 1px solid #333;
+  z-index: 10;
+}
+
+body.light .stats {
+  background: #eaeaea;
+  border-top: 1px solid #ccc;
+}
+
+
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 1rem;
+      }
+      .main {
+        padding: 1rem;
+      }
+    }
+    body.light,
+body.light .main,
+body.light .welcome,
+body.light .task-item span,
+body.light .topbar h1 {
+  color: #000000;
+  --accent: #000000;
+}
+
+body.light .input-group input,
+body.light .input-group input::placeholder {
+  color: #121212;
+}
+
+body.light .task-actions button {
+  color: #007bff; /* or keep var(--accent) */
+}
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #333;
+  color: var(--accent);
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+body.light .filter-btn {
+  background: #ddd;
+  color: #007bff;
+}
+
+body.light .filter-btn.active,
+body.light .filter-btn:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <a href="#"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="#"><i class="fas fa-tasks"></i> Tasks</a>
+    <a href="#"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>To-Do App</h1>
+      <div>
+        <button id="theme-toggle"><i class="fas fa-moon"></i></button>
+      </div>
+    </div>
+
+    <div class="welcome">Hi, User 👋 Here's your task list for today</div>
+
+    <div class="input-group">
+      <input type="text" id="task-input" placeholder="What do you need to do?" />
+      <button id="add-btn">Add Task</button>
+    </div>
+    <div class="filters">
+        <button data-filter="all" class="filter-btn active">All</button>
+        <button data-filter="completed" class="filter-btn">Completed</button>
+        <button data-filter="pending" class="filter-btn">Pending</button>
+      </div>
+      
+    <div class="task-list" id="task-list"></div>
+    <div class="stats">
+        <div><i class="fas fa-list"></i> Total: <span id="total-tasks">0</span></div>
+        <div><i class="fas fa-check-circle"></i> Completed: <span id="completed-tasks">0</span></div>
+        <div><i class="fas fa-hourglass-half"></i> Pending: <span id="pending-tasks">0</span></div>
+      </div>
+    
+  </div>
+
+  <script>
+    const taskInput = document.getElementById("task-input");
+    const addBtn = document.getElementById("add-btn");
+    const taskList = document.getElementById("task-list");
+    const totalEl = document.getElementById("total-tasks");
+    const completedEl = document.getElementById("completed-tasks");
+    const pendingEl = document.getElementById("pending-tasks");
+    const themeToggle = document.getElementById("theme-toggle");
+
+    let tasks = [];
+    let filter = "all"; // for future filter buttons
+    let isLight = localStorage.getItem("theme") === "light";
+
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function loadTasks() {
+      const saved = localStorage.getItem("tasks");
+      if (saved) tasks = JSON.parse(saved);
+    }
+
+    function addTask() {
+      const text = taskInput.value.trim();
+      if (text !== "") {
+        tasks.push({ text, completed: false });
+        taskInput.value = "";
+        saveTasks();
+        updateList();
+        taskInput.focus();
+
+      }
+    }
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+      updateList();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+      updateList();
+    }
+
+    function editTask(index) {
+      const newText = prompt("Edit your task:", tasks[index].text);
+      if (newText !== null && newText.trim() !== "") {
+        tasks[index].text = newText.trim();
+        saveTasks();
+        updateList();
+      }
+    }
+
+    function updateStats() {
+      const total = tasks.length;
+      const completed = tasks.filter(t => t.completed).length;
+      const pending = total - completed;
+      totalEl.textContent = total;
+      completedEl.textContent = completed;
+      pendingEl.textContent = pending;
+    }
+
+    function updateList() {
+  taskList.innerHTML = "";
+
+  const filtered = tasks.filter(task => {
+    if (filter === "all") return true;
+    return filter === "completed" ? task.completed : !task.completed;
+  });
+
+  if (filtered.length === 0) {
+    taskList.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--accent); opacity: 0.8;">No tasks found</div>`;
+  } else {
+    filtered.forEach((task, index) => {
+      const item = document.createElement("div");
+      item.className = "task-item" + (task.completed ? " done" : "");
+      item.innerHTML = `
+        <span>${task.text}</span>
+        <div class="task-actions">
+          <button onclick="toggleTask(${index})"><i class="fas fa-check"></i></button>
+          <button onclick="editTask(${index})"><i class="fas fa-pen"></i></button>
+          <button onclick="deleteTask(${index})"><i class="fas fa-trash"></i></button>
+        </div>
+      `;
+      taskList.appendChild(item);
+    });
+  }
+
+  updateStats();
+}
+
+
+    function applyTheme() {
+      document.body.classList.toggle("light", isLight);
+      themeToggle.innerHTML = isLight
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+    }
+
+    themeToggle.addEventListener("click", () => {
+      isLight = !isLight;
+      applyTheme();
+    });
+
+    addBtn.addEventListener("click", addTask);
+    taskInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") addTask();
+    });
+
+    
+    // Initialize
+    loadTasks();
+    updateList();
+    applyTheme();
+
+    const filterButtons = document.querySelectorAll(".filter-btn");
+
+filterButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    filter = btn.getAttribute("data-filter");
+    filterButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    updateList();
+  });
+});
+
+  </script>
+</body>
+</html>
